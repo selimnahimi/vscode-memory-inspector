@@ -29,6 +29,14 @@ export class DataHover implements HoverContribution {
         const octal = num.toString(8);
         const decimal = num.toString(10);
 
+        let float = '';
+        if (!isNaN(num)) {
+            const buffer = new ArrayBuffer(4);
+            const view = new DataView(buffer);
+            view.setUint32(0, num, true); // little endian
+            float = view.getFloat32(0, true).toString();
+        }
+
         const hexCodePoint = (parseInt(hexadecimal.slice(-6), 16) > 0x10FFFF)
             ? parseInt(hexadecimal.slice(-5), 16)
             : parseInt(hexadecimal.slice(-6), 16);
@@ -37,7 +45,7 @@ export class DataHover implements HoverContribution {
         const hoverItem = (
             <table className='data-hover'>
                 <tbody>
-                    {Object.entries({ binary, octal, decimal, hexadecimal, utf8 }).map(([label, value]) =>
+                    {Object.entries({ binary, octal, decimal, hexadecimal, float, utf8 }).map(([label, value]) =>
                         value
                             ? <tr className='label-value-pair' key={label}>
                                 <td className={`label ${label}`}>{label}</td>
